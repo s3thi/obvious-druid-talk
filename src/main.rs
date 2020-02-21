@@ -70,7 +70,29 @@ fn ui_builder() -> impl Widget<AppState> {
     .vertical()
     .lens(AppState::todo_list);
 
+    let footer = Flex::row()
+        .with_child(
+            Label::new(|data: &AppState, _: &Env| {
+                format!(
+                    "{} total, {} completed",
+                    data.todo_list.len(),
+                    data.todo_list.iter().filter(|i| i.is_completed).count()
+                )
+            })
+            .padding(PADDING_BASE),
+            1.0,
+        )
+        .with_child(
+            Button::new("Clear Completed", |_, data: &mut AppState, _| {
+                Arc::make_mut(&mut data.todo_list).retain(|item| !item.is_completed);
+            })
+            .padding(PADDING_BASE)
+            .fix_width(PADDING_BASE * 24.0),
+            0.0,
+        );
+
     Flex::column()
         .with_child(header.fix_height(PADDING_BASE * 6.0), 0.0)
         .with_child(todo_list, 1.0)
+        .with_child(footer.fix_height(PADDING_BASE * 6.0), 0.0)
 }

@@ -1,5 +1,5 @@
-use druid::widget::{Align, Label};
-use druid::{AppLauncher, Data, Widget, WindowDesc};
+use druid::widget::TextBox;
+use druid::{AppLauncher, Data, Lens, LensWrap, Widget, WindowDesc};
 use std::sync::Arc;
 
 struct TodoItem {
@@ -7,7 +7,7 @@ struct TodoItem {
     is_completed: bool,
 }
 
-#[derive(Data, Clone)]
+#[derive(Data, Clone, Lens)]
 struct AppState {
     todo_list: Arc<Vec<TodoItem>>,
     todo_entry: String,
@@ -26,5 +26,5 @@ fn main() {
 }
 
 fn ui_builder() -> impl Widget<AppState> {
-    Align::centered(Label::new("Hello, world!"))
+    LensWrap::new(TextBox::new(), AppState::todo_entry)
 }

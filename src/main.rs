@@ -1,10 +1,10 @@
-use druid::widget::{Button, Flex, Label, List, Scroll, TextBox, WidgetExt};
-use druid::{AppLauncher, Data, Env, Lens, LensWrap, Widget, WindowDesc};
+use druid::widget::{Button, Checkbox, Flex, Label, List, Padding, Scroll, TextBox, WidgetExt};
+use druid::{AppLauncher, Data, Env, Insets, Lens, LensWrap, Widget, WindowDesc};
 use std::sync::Arc;
 
 const PADDING_BASE: f64 = 8.0;
 
-#[derive(Data, Clone, Debug)]
+#[derive(Data, Clone, Debug, Lens)]
 struct TodoItem {
     task: String,
     is_completed: bool,
@@ -55,11 +55,19 @@ fn ui_builder() -> impl Widget<AppState> {
             0.0,
         );
 
-    let todo_list = Scroll::new(
-        List::new(|| {
-            Label::new(|item: &TodoItem, _: &Env| item.task.to_string())
-                .padding(PADDING_BASE)
+    let todo_list = Scroll::new(List::new(|| {
+        Flex::row()
+            .with_child(Checkbox::new().lens(TodoItem::is_completed), 0.0)
+            .with_child(
+                Padding::new(
+                    Insets::new(PADDING_BASE, 0.0, 0.0, 0.0),
+                    Label::new(|item: &TodoItem, _: &Env| item.task.to_string()),
+                ),
+                1.0,
+            )
+            .padding(PADDING_BASE)
     }))
+    .vertical()
     .lens(AppState::todo_list);
 
     Flex::column()

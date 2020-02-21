@@ -1,6 +1,8 @@
-use druid::widget::TextBox;
+use druid::widget::{Button, Flex, Label, TextBox, WidgetExt};
 use druid::{AppLauncher, Data, Lens, LensWrap, Widget, WindowDesc};
 use std::sync::Arc;
+
+const PADDING_BASE: f64 = 8.0;
 
 struct TodoItem {
     task: String,
@@ -26,5 +28,16 @@ fn main() {
 }
 
 fn ui_builder() -> impl Widget<AppState> {
-    LensWrap::new(TextBox::new(), AppState::todo_entry)
+    Flex::row()
+        .with_child(Label::new("Add item:").padding(PADDING_BASE), 0.0)
+        .with_child(
+            LensWrap::new(TextBox::new().padding(PADDING_BASE), AppState::todo_entry),
+            1.0,
+        )
+        .with_child(
+            Button::new("Add", Button::noop)
+                .padding(PADDING_BASE)
+                .fix_width(PADDING_BASE * 8.0),
+            0.0,
+        )
 }

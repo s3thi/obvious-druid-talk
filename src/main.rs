@@ -4,12 +4,13 @@ use std::sync::Arc;
 
 const PADDING_BASE: f64 = 8.0;
 
+#[derive(Clone, Debug)]
 struct TodoItem {
     task: String,
     is_completed: bool,
 }
 
-#[derive(Data, Clone, Lens)]
+#[derive(Data, Clone, Lens, Debug)]
 struct AppState {
     todo_list: Arc<Vec<TodoItem>>,
     todo_entry: String,
@@ -35,9 +36,22 @@ fn ui_builder() -> impl Widget<AppState> {
             1.0,
         )
         .with_child(
-            Button::new("Add", Button::noop)
-                .padding(PADDING_BASE)
-                .fix_width(PADDING_BASE * 8.0),
+            Button::new("Add", |_, data: &mut AppState, _| {
+                // Create a new TodoItem.
+                let todo_item = TodoItem {
+                    task: data.todo_entry.to_string(),
+                    is_completed: false,
+                };
+
+                // Push it into the todo list.
+                Arc::make_mut(&mut data.todo_list).push(todo_item);
+                // Clear the textbox.
+                data.todo_entry = "".to_string();
+                // Print out the current state of the app.
+                println!("{:?}", data);
+            })
+            .padding(PADDING_BASE)
+            .fix_width(PADDING_BASE * 8.0),
             0.0,
         )
 }
